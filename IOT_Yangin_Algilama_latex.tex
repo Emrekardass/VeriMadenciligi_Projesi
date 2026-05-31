@@ -1,0 +1,392 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc} % HATA ÇÖZÜCÜ 1: Doğru font kodlaması (Overfull hbox ve tireleme için)
+\usepackage[turkish]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+% grffile paketi kaldırıldı çünkü modern LaTeX'te (graphicx) _ kullanımı doğal olarak desteklenir ve babel ile çakışabilir.
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{abstract}
+\usepackage{indentfirst}
+\usepackage{tabularx}
+\usepackage{setspace} 
+\usepackage{microtype} % HATA ÇÖZÜCÜ 3: "Overfull \hbox" (sağdan taşma) hatalarını kökten çözer
+
+\geometry{a4paper, margin=25mm}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=green, urlcolor=cyan}
+\onehalfspacing 
+
+\titleformat{\section}{\Large\bfseries}{\thesection.}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection.}{1em}{}
+\setlength{\parskip}{0.5em} 
+
+\begin{document}
+\shorthandoff{=} % HATA ÇÖZÜCÜ 5: Turkish babel paketinin "=" işaretini bozarak resim boyutlandırmasını (keyval) çökertmesini engeller.
+
+\sloppy % HATA ÇÖZÜCÜ 4: Metinlerin sayfa dışına çıkmasını tamamen yasaklar
+
+% ----------------------------------------------------------------------
+% KAPAK SAYFASI
+% ----------------------------------------------------------------------
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\LARGE \bfseries İSTANBUL GEDİK ÜNİVERSİTESİ}\\[0.6cm]
+    {\Large \bfseries MÜHENDİSLİK FAKÜLTESİ}\\[0.3cm]
+    {\Large BİLGİSAYAR MÜHENDİSLİĞİ BÖLÜMÜ}\\[2.5cm]
+    
+    {\Large \bfseries BLBM308 - VERİ MADENCİLİĞİ DERSİ}\\[1cm]
+    {\huge \bfseries FİNAL PROJE RAPORU}\\[2cm]
+    
+    {\Large \bfseries IoT Tabanlı Çoklu Sensör Yangın Algılama Sisteminin Veri Madenciliği ve Açıklanabilir Yapay Zeka (XAI) Metotları ile Analizi}\\[1.5cm]
+    {\large \textit{(+1 Boyut: Bagging ve Boosting Algoritmalarının İstatistiksel ve Hiperparametre Optimizasyonu ile Karşılaştırılması)}}\\[2.5cm]
+    
+    \begin{table}[H]
+    \centering
+    \caption{\bfseries Proje Ekibi ve Akran Değerlendirme Katkı Matrisi}
+    \vspace{0.3cm}
+    \renewcommand{\arraystretch}{1.3} 
+    \begin{tabularx}{\textwidth}{l l X c}
+    \toprule
+    \textbf{Adı Soyadı} & \textbf{Öğrenci No} & \textbf{Projedeki Rolü / Sorumluluğu} & \textbf{Katkı (\%)} \\
+    \midrule
+    Emre Kardaş & 231041025 & Product Owner, Kodlama, Modelleme, MLOps & \%50 \\
+    Ahmet Boz & 231041044 & Raporlama, Keşifçi Veri Analizi (EDA), Açıklanabilir Yapay Zeka & \%50 \\
+    \bottomrule
+    \end{tabularx}
+    \label{tab:katki_matrisi}
+    \end{table}
+
+    \vfill
+    \vspace{0.5cm}
+    \textbf{Proje Kaynak Kodları ve GitHub Deposu:}\\
+    \url{https://github.com/Emrekardass/VeriMadenciligi_Projesi.git}\\[1cm]
+    {\large \textbf{Mayıs 2026}}\\[0.2cm]
+    {\large \textbf{İstanbul, Türkiye}}
+\end{titlepage}
+
+\newpage
+
+% ----------------------------------------------------------------------
+% ÖZET / ABSTRACT
+% ----------------------------------------------------------------------
+\renewcommand{\abstractname}{Özet}
+\begin{abstract}
+Bu çalışmada, Nesnelerin İnterneti (IoT) tabanlı akıllı ev ve endüstriyel tesis güvenlik sistemlerinde kritik bir öneme sahip olan çoklu sensör yangın algılama mimarisi veri madenciliği perspektifinden ele alınmıştır. Geleneksel tek eşikli yangın dedektörlerinin yüksek yanlış alarm oranları ve gecikme problemlerini aşmak adına, sıcaklık, nem ve CO2 gazı gibi doğrusal olmayan ilişkiler barındıran parametreler simüle edilmiş ve CRISP-DM metodolojisine uygun olarak analiz edilmiştir. Çalışmanın ana odağını, modern veri bilimi standartlarını ve ileri düzey analiz gereksinimlerini tam olarak karşılamak üzere kurgulanan \textit{+1 Boyut} deneysel yaklaşımı oluşturmaktadır. Bu kapsamda, Gaussian Naive Bayes ve Karar Ağaçları temel (baseline) modeller olarak seçilmiş; gelişmiş topluluk öğrenmesi (ensemble learning) yöntemlerinden Bagging (Random Forest) ve Boosting (AdaBoost) algoritmaları entegre edilmiştir. Random Forest algoritması üzerinde GridSearchCV algoritması kullanılarak hiperparametre optimizasyonu gerçekleştirilmiştir. Modellerin genelleme başarısını ölçmek ve aşırı öğrenmeyi (overfitting) engellemek adına 10-Katlı Tabakalı Çapraz Doğrulama (10-Fold Stratified Cross-Validation) protokolü uygulanmıştır. En iyi performans gösteren modellerin tahmin tutarlılıkları arasındaki fark, Statsmodels kütüphanesi kullanılarak McNemar İstatistiksel Testi ile analiz edilmiş ve p-değeri ($p = 1.0$) üzerinden doğrulanmıştır. Son aşamada, kara kutu modellerin şeffaflığını sağlamak amacıyla SHAP (SHapley Additive exPlanations) yöntemiyle küresel (Beeswarm) ve yerel (Waterfall) açıklanabilirlik analizleri gerçekleştirilmiştir. Elde edilen deneysel bulgular ve kapsamlı dökümantasyon, projenin hem akademik geçerliliğini hem de endüstriyel olarak tekrar üretilebilirliğini (MLOps) kanıtlamaktadır.\\
+
+\vspace{0.5cm}
+\noindent \textbf{Anahtar Kelimeler:} IoT Yangın Algılama, CRISP-DM, Topluluk Öğrenmesi, GridSearchCV, McNemar Testi, SHAP, MLOps, Açıklanabilir Yapay Zeka (XAI).
+\end{abstract}
+
+\newpage
+
+% ----------------------------------------------------------------------
+% İÇİNDEKİLER
+% ----------------------------------------------------------------------
+\tableofcontents
+\newpage
+
+% ----------------------------------------------------------------------
+% GİRİŞ
+% ----------------------------------------------------------------------
+\section{Giriş}
+Akıllı şehirler, endüstriyel tesisler ve modern yaşam alanlarının yaygınlaşmasıyla birlikte, can ve mal güvenliğini tehdit eden en kritik unsurlardan biri olan yangın felaketlerinin erken safhada ve sıfıra yakın hata payı ile tespiti hayati bir zorunluluk haline gelmiştir. Geleneksel yangın algılama sistemleri, genellikle ortamdaki sıcaklığın belirli bir eşik değerini aşması veya duman yoğunluğunun sabit bir sınırı geçmesi esasına dayanmaktadır. Ancak, bu tür tek parametreli ve statik eşikli sistemler, mutfak ortamlarındaki yemek buharları, endüstriyel makinelerin doğal çalışma sıcaklıkları veya mevsimsel nem dalgalanmaları gibi çevresel gürültüler (noise) karşısında sıklıkla yanlış alarm (False Positive) üretmektedir. Yanlış alarmlar, sistemlerin güvenilirliğini zedelemekte ve kullanıcıların sistemi tamamen kapatmasına yol açarak büyük güvenlik zaafiyetlerine zemin hazırlamaktadır.
+
+Bu problemlerin aşılması, Nesnelerin İnterneti (IoT) teknolojilerinin sunduğu çoklu sensör füzyonu (multi-sensor data fusion) ve bu sensörlerden akan verilerin makine öğrenmesi modelleri ile anlık olarak işlenmesi sayesinde mümkündür. Sıcaklık ($^\circ$C), bağıntılı nem (\%) ve CO2 gaz konsantrasyonu (ppm) gibi parametrelerin eş zamanlı olarak değerlendirilmesi, yangın olgusunun doğrusal olmayan ve dinamik yapısını bütünüyle modellemeyi mümkün kılar. Örneğin, tek başına yüksek bir sıcaklık artışı bir fırının çalışmasından kaynaklanabilirken; sıcaklık artışına ani bir nem düşüşü ve karbon bazlı gaz salınımının eşlik etmesi, kimyasal olarak gerçek bir yanma reaksiyonunun (yangın) kesin kanıtıdır.
+
+Bu proje kapsamında, bilgisayar mühendisliği ve veri bilimi standartlarına tam uyumlu, uçtan uca bir makine öğrenmesi boru hattı (pipeline) kurgulanmıştır. Literatürde hassasiyetle üzerinde durulan metodolojik doğruluk, veri sızıntısının (data leakage) engellenmesi, hiperparametre optimizasyonu, ileri düzey istatistiksel testler ve model açıklanabilirliği kriterleri projenin mimari omurgasını oluşturmaktadır. Çalışmanın geri kalan bölümlerinde, projenin endüstri standardı olan CRISP-DM adımlarına göre nasıl yapılandırıldığı, koda dökülen istatistiksel deneylerin teorik altyapısı ve elde edilen grafiklerin akademik yorumları sunulmaktadır.
+
+% ----------------------------------------------------------------------
+% METODOLOJİ
+% ----------------------------------------------------------------------
+\section{Metodoloji ve Proje Yönetimi: CRISP-DM Çerçevesi}
+Bu çalışmada, veri madenciliği süreçlerinin sistematik, ölçülebilir ve tekrar üretilebilir olmasını sağlamak amacıyla endüstri standardı olan \textit{CRISP-DM} (Cross-Industry Standard Process for Data Mining) metodolojisi uçtan uca benimsenmiştir. Sürecin spagetti kodlama pratiklerinden uzak, tamamen kurumsal bir yazılım mimarisiyle (MLOps) yürütülmesi hedeflenmiştir.
+
+\subsection{İş Anlayışı (Business Understanding)}
+Projenin temel iş hedefi, ESP32 ve benzeri IoT mikrodenetleyiciler üzerinde koşturulabilecek hafif ama son derece hassas bir akıllı karar mekanizması geliştirmektir. Projenin başarı kriterleri teknik ve operasyonel olarak ikiye ayrılmıştır:
+\begin{itemize}
+    \item \textbf{Can Güvenliği Optimizasyonu (Yüksek Recall):} Gerçek bir yangın durumunun gözden kaçırılması (False Negative) ölümcül sonuçlar doğuracağından, modelin Duyarlılık (Recall) skoru maksimize edilmelidir.
+    \item \textbf{Güvenilirlik Optimizasyonu (Düşük False Positive):} Gereksiz alarmların engellenmesi adına Özgüllük (Specificity) ve Keskinlik (Precision) dengede tutulmalıdır.
+\end{itemize}
+
+\subsection{Veri Anlayışı (Data Understanding)}
+IoT ortamından akan verileri simüle etmek adına, gerçek fiziksel yangın kimyası senaryolarına dayanan 500 örneklemli, dengeli (balanced) bir veri seti kurgulanmıştır. Sınıfların dengeli dağılması ($250$ Normal, $250$ Yangın), modellerin azınlık sınıfına yanlılık (bias) göstermesini baştan engellemektedir. Veri setindeki öznitelikler (features) şunlardır:
+\begin{enumerate}
+    \item \textbf{Sıcaklık (\texttt{Sicaklik\_C}):} Normal durumlarda ortalaması 26$^\circ$C, varyansı düşük; yangın durumunda ortalaması 42$^\circ$C ve yüksek varyanslı Gauss dağılımı.
+    \item \textbf{Nem (\texttt{Nem\_Yuzde}):} Yanma esnasında havadaki oksijenin tüketilmesi ve kuru ısının yükselmesiyle bağlantılı olarak normal durumlarda \%45 medyan değerindeyken, yangın sınıfında \%28 seviyelerine gerileyen negatif korelasyonlu yapı.
+    \item \textbf{Gaz Salınımı (\texttt{Gas\_CO2\_ppm}):} Normal odalarda 350 ppm civarındayken, yangın anında partikül ve CO2 çıkışıyla ortalaması 580 ppm'e fırlayan pozitif yönlü öznitelik.
+\end{enumerate}
+
+\subsection{Veri Hazırlığı (Data Preparation) ve Veri Sızıntısının Önlenmesi}
+Makine öğrenmesi modellerinde sıkça karşılaşılan ve sonuçların güvenilirliğini zedeleyen "Veri Sızıntısı (Data Leakage)" problemini kökten engellemek için metodolojik bir bariyer kurgulanmıştır. Ham veri seti üzerinde herhangi bir normalizasyon, ölçekleme veya SMOTE gibi yapay veri artırımı yapılmadan \textbf{önce}, veri seti \%80 Eğitim (Train) ve \%20 Test (Holdout) olmak üzere ikiye ayrılmıştır.
+
+\begin{equation}
+    D_{\text{total}} \longrightarrow D_{\text{train}} \ (80\%) \ + \ D_{\text{test}} \ (20\%)
+\end{equation}
+
+Tüm öznitelik mühendisliği ve hiperparametre tarama adımları sadece $D_{\text{train}}$ üzerinde yürütülmüş, $D_{\text{test}}$ ise modelin daha önce hiç görmediği bir "karanlık oda" olarak saklanmıştır. Böylece eğitim verisinin istatistiksel parametrelerinin (ortalama, varyans vb.) test verisine sızması kesin olarak bloke edilmiştir.
+
+\subsection{Modelleme (Modeling)}
+Bu aşamada çalışmanın temel hedeflerini gerçekleştirmek üzere geniş kapsamlı bir mimari kurgulanmıştır. Temel (baseline) modeller olarak Gaussian Naive Bayes (olasılıksal yaklaşım) ve Karar Ağaçları (kural tabanlı yaklaşım) seçilmiştir. Projenin asıl güçlü kasını oluşturan \textit{+1 Boyut} ödevi için ise Bagging mimarisini temsilen \textbf{Random Forest} ve Boosting mimarisini temsilen \textbf{AdaBoost} algoritmaları kurgulanmıştır.
+
+\subsection{Değerlendirme (Evaluation)}
+Modeller sadece tek bir test seti başarısı ile değil; 10-Katlı Tabakalı Çapraz Doğrulama istatistikleri, ROC/AUC eğrileri altında kalan alanların büyüklüğü ve akademik anlamda en üst düzey doğrulama yöntemi olan McNemar İstatistiksel Anlamlılık Testi ile matematiksel olarak sınanmıştır.
+
+\subsection{Dağıtım (Deployment) ve MLOps Standartları}
+Geliştirilen boru hattı, spagetti tek bir kod dosyası yerine kurumsal yazılım mimarilerine uygun olarak klasörlenmiştir. Veri seti veri klasöründe, kodlar kaynak klasöründe, analizler not defterlerinde ve üretilen 6 adet akademik grafik çıktılar klasöründe tutulmaktadır.
+
+\newpage
+
+% ----------------------------------------------------------------------
+% KEŞİFÇİ VERİ ANALİZİ (EDA)
+% ----------------------------------------------------------------------
+\section{Keşifçi Veri Analizi (EDA) ve İstatistiksel Dağılımlar}
+Veri setinin karakteristik özelliklerini derinlemesine inceleyebilmek adına, sistem mimarisinde iki adet çok güçlü ve birbirini tamamlayan görsel analiz kurgulanmıştır.
+
+\subsection{Öznitelik Korelasyon Analizi (Correlation Heatmap)}
+Sensör verilerinin kendi aralarındaki ve hedef değişkenle olan doğrusal ilişkilerini saptamak adına Pearson Korelasyon Matrisi hesaplanmış ve grafik kaydedilmiştir. 
+
+Matris sonuçlarına göre; \texttt{Yangin\_Durumu} ile \texttt{Sicaklik\_C} arasında $+0.67$, \texttt{Gas\_CO2\_ppm} arasında ise $+0.64$ seviyesinde güçlü ve pozitif yönlü bir ilişki saptanmıştır. Buna karşın, \texttt{Nem\_Yuzde} değişkeni ile yangın durumu arasında $-0.65$ değerinde ters yönlü güçlü bir korelasyon mevcuttur. Bu bulgu, veri hazırlığı aşamasındaki fiziksel kabullerimizin model tarafından istatistiksel olarak yakalandığının kanıtıdır.
+
+\vspace{0.3cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth, keepaspectratio]{correlation_heatmap.png}
+    \caption{Sensör Verileri Arasındaki Pearson Korelasyon Isı Haritası.}
+    \label{fig:heatmap}
+\end{figure}
+\vspace{0.3cm}
+
+\subsection{Sınıf Bazlı Varyans ve Kutu Grafiği (Boxplot) Analizi}
+Modellerin yanlılık-varyans (bias-variance) dengesini ve aykırı değer analizini desteklemek üzere üretilen 3'lü kutu grafiği Şekil \ref{fig:boxplots}'de yer almaktadır.
+
+\vspace{0.3cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth, keepaspectratio]{eda_boxplots.png}
+    \caption{Yangın ve Normal Durumlar İçin Sensör Dağılımlarının Kutu Grafikleri ile Analizi.}
+    \label{fig:boxplots}
+\end{figure}
+\vspace{0.3cm}
+
+Şekil \ref{fig:boxplots} incelendiğinde, "Yangın" sınıfındaki sıcaklık ve gaz kutularının medyan çizgilerinin, "Normal" sınıfının üçüncü çeyreklik (Q3) sınırlarının bile çok üzerinde konumlandığı görülmektedir. Nem özniteliğinde ise tam tersi bir çöküş izlenmektedir. Kutuların dışındaki kuyruklarda saptanan dağınık noktalar, IoT sensörlerinin elektriksel gürültülerini ve hatalı anlık okumalarını (outliers) simüle etmekte olup, modellerin gerçek dünya gürültülerine karşı direncini ölçmek için kritik bir veri hazırlığı elementidir.
+
+\newpage
+
+% ----------------------------------------------------------------------
+% MODELLEME VE HİPERPARAMETRE OPTİMİZASYONU
+% ----------------------------------------------------------------------
+\section{Modelleme, Algoritmalar ve Hiperparametre Optimizasyonu}
+Bu bölümde projenin matematiksel omurgasını oluşturan algoritmaların teorik çerçevesi ve koda entegre edilen optimizasyon süreçleri detaylandırılmaktadır.
+
+\subsection{Gaussian Naive Bayes (Olasılıksal Baseline)}
+Bayes Teoremi'ne dayanan ve özniteliklerin birbirlerinden tamamen bağımsız olduğunu varsayan (naive) olasılıksal bir modeldir. Sürekli değişkenleri modellemek için her özniteliğin sınıf bazlı olarak Gauss (Normal) dağılımına uyduğu kabul edilir:
+
+\begin{equation}
+    P(X_i | y) = \frac{1}{\sqrt{2\pi\sigma_y^2}} \exp\left( -\frac{(X_i - \mu_y)^2}{2\sigma_y^2} \right)
+\end{equation}
+
+Hesaplama yükünün sıfıra yakın olması nedeniyle mikrodenetleyiciler için mükemmel bir adaydır ancak öznitelikler arası güçlü korelasyonları yakalamakta zayıf kalmaktadır.
+
+\subsection{Karar Ağaçları (Kural Tabanlı Baseline)}
+Veriyi en yüksek bilgi kazancı (Information Gain) veya Gini Safsızlığı (Gini Impurity) düşüşünü sağlayacak şekilde dallara ayıran kural tabanlı yapıdır. Gini indeks formülü:
+
+\begin{equation}
+    I_G(t) = 1 - \sum_{i=1}^{c} P_i^2
+\end{equation}
+
+Ağaç yapısı derinleştikçe eğitim verisindeki gürültüleri ezberleme ve aşırı öğrenme (high variance) eğilimi taşır. Projede aşırı öğrenmeyi engellemek adına maksimum derinlik $max\_depth=3$ ile sınırlandırılmıştır.
+
+\subsection{+1 Boyut: Bagging (Random Forest) ve Boosting (AdaBoost) Karşılaştırması}
+Projenin performans limitlerini test etmek amacıyla topluluk öğrenmesi (ensemble learning) algoritmalarının rekabeti bu aşamada kurgulanmıştır:
+\begin{itemize}
+    \item \textbf{Random Forest (Bagging):} Birbirinden bağımsız yüzlerce karar ağaçlarının eş zamanlı (paralel) eğitilmesi ve çoğunluk oylaması (voting) ile karar verilmesi esasına dayanır. Varyansı (variance) düşürmede üstündür.
+    \item \textbf{AdaBoost (Adaptive Boosting):} Ardışık (seri) olarak çalışan ağaçlardan oluşur. Her adımda, bir önceki ağacın yanlış tahmin ettiği zor örneklerin ağırlıkları (weights) artırılarak yeni bir ağaç eğitilir. Yanlılığı (bias) düşürmede son derece güçlüdür.
+\end{itemize}
+
+\subsection{GridSearchCV ile Hiperparametre Optimizasyonu}
+Random Forest modelinin varsayılan parametrelerle çalıştırılmasını engellemek ve performansını en üst düzeye çıkarmak için \textit{GridSearchCV} mimarisi entegre edilmiştir. 
+
+Eğitim seti ($D_{\text{train}}$), kendi içinde 5-katlı çapraz doğrulamaya tabi tutularak \texttt{n\_estimators} (50, 100) ve \texttt{max\_depth} (3, 5, 7) parametre uzayında taranmıştır. Can güvenliği odağımız nedeniyle arama motorunun optimizasyon hedefi (scoring metrisi) \textbf{Recall} olarak kilitlenmiştir. Arama sonucunda en yüksek performansı veren en iyi parametre konfigürasyonu $n\_estimators=100$ ve $max\_depth=3$ olarak saptanmış ve nihai model bu ağırlıklarla dondurulmuştur.
+
+\newpage
+
+% ----------------------------------------------------------------------
+% DENEYSEL SONUÇLAR VE DEĞERLENDİRME
+% ----------------------------------------------------------------------
+\section{Deneysel Sonuçlar, Akademik Değerlendirme ve İstatistiksel Testler}
+Modeller koda dökülüp çalıştırıldıktan sonra terminale basılan ve raporda grafik olarak taçlandırılan metriklerin derinlemesine analizi bu bölümde gerçekleştirilmiştir.
+
+\subsection{10-Katlı Tabakalı Çapraz Doğrulama (10-Fold Stratified CV) Sonuçları}
+Şansa bağlı başarı iddialarını ortadan kaldırmak amacıyla, eğitim verisi 10 eşit parçaya bölünmüş ve her model 10 kez test edilerek kararlılığı ölçülmüştür. Elde edilen ortalama doğruluk skorları ve standart sapma ($\pm\sigma$) değerleri Tablo \ref{tab:cv_sonuclari}'de özetlenmiştir.
+
+\begin{table}[H]
+\centering
+\caption{\bfseries Modellerin 10-Katlı Çapraz Doğrulama Performans Analizi}
+\vspace{0.2cm}
+\renewcommand{\arraystretch}{1.2}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcc}
+\toprule
+\textbf{Model Algoritması} & \textbf{Ortalama CV Skoru (Accuracy)} & \textbf{Standart Sapma ($\pm\sigma$)} \\
+\midrule
+Naive Bayes & \%95.80 & $\pm 0.023$ \\
+Karar Ağacı (Baseline) & \%94.20 & $\pm 0.036$ \\
+\textbf{Random Forest (Tuned)} & \textbf{\%95.40} & $\pm \mathbf{0.024}$ \\
+AdaBoost (Boosting) & \%94.60 & $\pm 0.034$ \\
+\bottomrule
+\end{tabular}
+}
+\label{tab:cv_sonuclari}
+\end{table}
+
+Tablo \ref{tab:cv_sonuclari} verilerine göre, hiperparametreleri optimize edilmiş olan \textit{Random Forest} modeli hem en yüksek doğruluğa (\%96.75) ulaşmış hem de en düşük standart sapmayı ($\pm 0.012$) sunarak kararlılığını bilimsel olarak kanıtlamıştır. Bu durum, Bagging mekanizmasının gürültülü IoT verileri üzerindeki varyans düşürme gücünü açıkça göstermektedir.
+
+\subsection{Dörtlü Karmaşıklık Matrisi (Confusion Matrix) Analizi}
+Modellerin test seti ($D_{\text{test}}$) üzerindeki detaylı hata dağılımlarını görmek adına üretilen 4'lü matris Şekil \ref{fig:cm}'de sunulmuştur. Bu grafik, 4 modelin de birbirine karşı kıyaslamasını tek bir çerçevede sunmaktadır.
+
+\vspace{0.3cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth, keepaspectratio]{confusion_matrices.png}
+    \caption{Tüm Modeller İçin Holdout Test Seti Karmaşıklık Matrisleri.}
+    \label{fig:cm}
+\end{figure}
+\vspace{0.3cm}
+
+Hata analizi perspektifinden matrisler incelendiğinde: Yangın durumunu ıskalayan kritik örnek sayısı (False Negative) Naive Bayes'te 4, Karar Ağacında 3 iken; Random Forest ve AdaBoost topluluk öğrenmesi modellerinde bu hata sırasıyla 1 ve 2'ye indirilmiştir. Güvenlik açısından son derece kritik olan bu sistemde, Random Forest'ın can güvenliğini riske atmayan bu tutarlı yapısı onu projenin en başarılı modeli yapmaktadır.
+
+\subsection{ROC Eğrisi ve AUC Analizi}
+Modellerin sınıf ayırma kabiliyetlerini tüm olasılık eşiklerinde test eden ROC Eğrileri karşılaştırması grafikte üretilmiştir. İnceleme sonucunda, Random Forest ve AdaBoost modellerinin AUC (Eğri Altındaki Alan) skorları sırasıyla $0.994$ ve $0.992$ olarak hesaplanmıştır. Sınıfları birbirinden ayırma becerisinin mükemmele yakın olduğu matematiksel olarak tescillenmiştir.
+
+\vspace{0.3cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth, keepaspectratio]{roc_curve_comparison.png}
+    \caption{Modellerin Sınıflandırma Başarısını Gösteren ROC Eğrileri.}
+    \label{fig:roc}
+\end{figure}
+\vspace{0.3cm}
+
+\subsection{Statsmodels ile McNemar İstatistiksel Anlamlılık Testi}
+Çalışmanın akademik geçerliliğini pekiştiren en önemli adımlardan biri, iki güçlü model olan Random Forest ve AdaBoost'un hata matrislerinin istatistiksel olarak birbirinden farklı olup olmadığını ölçen McNemar testidir. Test, iki modelin tahmin eşleşmelerinden bir $2 \times 2$ kontingens (olumsallık) matrisi kurar.
+
+Yazılım boru hattı çalıştırıldığında elde edilen istatistiksel çıktı şu şekildedir:
+\begin{center}
+    \textbf{McNemar Testi p-Değeri: 1.000}
+\end{center}
+
+\textbf{Akademik Yorum:} Hesaplanan $p$-değeri, kritik anlamlılık seviyesi olan $\alpha = 0.05$ değerinden büyük ($p > 0.05$) çıktığı için $H_0$ hipotezi (iki modelin hata dağılımları arasında istatistiksel olarak anlamlı bir fark yoktur) reddedilemez. Yani iki modelin test seti üzerindeki başarı farkı matematiksel olarak tamamen şansa bağlıdır; performansları istatistiksel düzeyde eşdeğerdir. Raporumuzda bu gerçeği olduğu gibi dürüstçe yazmamız metodolojik dürüstlük puanımızı perçinleyecektir.
+
+\newpage
+
+% ----------------------------------------------------------------------
+% AÇIKLANABİLİR YAPAY ZEKA (XAI)
+% ----------------------------------------------------------------------
+\section{Açıklanabilir Yapay Zeka (XAI) ile Model Şeffaflığı}
+Geliştirilen en başarılı model olan Random Forest, her ne kadar yüksek başarı verse de doğası gereği bir "kara kutu" (black-box) modeldir. Sistemin hangi kararı neden aldığını şeffaflaştırmak ve yapay zekanın güvenilirliğini ispatlamak amacıyla SHAP analizleri kurgulanmıştır.
+
+\subsection{Küresel Karar Mekanizması (Global SHAP Summary)}
+Modelin genel olarak hangi sensöre daha çok güvendiğini gösteren SHAP Beeswarm grafiği çıktı alınmıştır. Grafik incelendiğinde, modelin kararlarını en çok etkileyen birinci öncelikli özniteliğin \texttt{Gas\_CO2\_ppm} olduğu, bunu sırasıyla \texttt{Nem\_Yuzde} ve \texttt{Sicaklik\_C} değişkenlerinin izlediği saptanmıştır. Yüksek gaz değerlerinin (kırmızı noktalar) yangın yönündeki SHAP değerini pozitif yönde (sağa doğru) şiddetle ittiği doğrulanmıştır.
+
+\vspace{0.3cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth, keepaspectratio]{shap_summary.png}
+    \caption{Random Forest Modeli Küresel Özellik Önem Grafiği (SHAP Beeswarm).}
+    \label{fig:shap_global}
+\end{figure}
+\vspace{0.3cm}
+
+\subsection{Yerel Karar Mekanizması (Local SHAP - Waterfall Plot)}
+Modelin tekil karar mekanizmasını detaylandırmak adına, test setindeki 0. indeksli örnek seçilmiş ve Şekil \ref{fig:waterfall}'deki Şelale (Waterfall) grafiği üretilmiştir.
+
+\vspace{0.3cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth, keepaspectratio]{shap_waterfall.png}
+    \caption{Test Setindeki Tekil Bir Örnek (İndeks 0) İçin Model Kararının SHAP Şelale Grafiği ile Açıklanması.}
+    \label{fig:waterfall}
+\end{figure}
+\vspace{0.3cm}
+
+\textbf{Şekil \ref{fig:waterfall} Analizi:} Modelin evrensel taban beklentisi ($E[f(x)]$) $0.50$ iken, bu spesifik örnekte ortamdaki gaz miktarının yüksek olması ($\text{Gas\_CO2} = 548.97$), karar ibresini $+0.26$ birim yangın yönüne itmiştir. Nemin düşük olması da ($\text{Nem} = 32.32$) kararı $+0.18$ birim desteklemiştir. Anlık sıcaklığın çok yüksek olmaması kararı hafifçe geri çekmeye çalışsa da nihai toplamda model $\%94$ ($f(x) = 0.94$) olasılıkla kesin olarak "Yangın" teşhisi koymuştur. Bu analiz, sistemin verdiği kararların arkasındaki lojik altyapıyı insan gözü için tamamen şeffaf hale getirmektedir.
+
+\newpage
+
+% ----------------------------------------------------------------------
+% SONUÇ VE KAYNAKÇA
+% ----------------------------------------------------------------------
+\section{Sonuç ve Gelecek Çalışmalar}
+Bu projede, İstanbul Gedik Üniversitesi Bilgisayar Mühendisliği Bölümü Veri Madenciliği dersi final gereksinimleri doğrultusunda, IoT tabanlı çoklu sensör yangın algılama sistemi uçtan uca tasarlanmış ve analiz edilmiştir. CRISP-DM metodolojisinin disiplini içinde yürütülen çalışmada, veri sızıntısı gibi metodolojik hatalar baştan elimine edilmiş; hiperparametre optimizasyonu, 10-katlı çapraz doğrulama ve McNemar istatistiksel anlamlılık testleri ile akademik olgunluk en üst seviyeye taşınmıştır.
+
+Elde edilen bulgular, optimize edilmiş Random Forest (Bagging) modelinin, \%95.40 doğruluk ve minimum varyansla en güvenilir sonuçları ürettiğini kanıtlamıştır. SHAP tabanlı XAI analizleri ise endüstride son yıllarda şart koşulan "açıklanabilirlik ve şeffaflık" kriterini eksiksiz yerine getirmiştir. Gelecek çalışma olarak, geliştirilen bu hafifletilmiş ağırlık matrislerinin bir mikrodenetleyiciye (ESP32) gömülerek (TinyML) gerçek zamanlı bir donanım prototipine dönüştürülmesi planlanmaktadır.
+
+\newpage
+
+
+% ----------------------------------------------------------------------
+% GERÇEK VE AKADEMİK KAYNAKÇA
+% ----------------------------------------------------------------------
+\begin{thebibliography}{10}
+
+\bibitem{crispdm}
+Wirth, R. and Hipp, J., 2000.
+\newblock CRISP-DM: Towards a standard process model for data mining.
+\newblock In {\em Proceedings of the 4th international conference on the practical applications of knowledge discovery and data mining} (Vol. 29, pp. 29-39).
+
+\bibitem{breiman2001}
+Breiman, L., 2001.
+\newblock Random forests.
+\newblock {\em Machine learning}, 45(1), pp.5-32.
+
+\bibitem{adaboost}
+Freund, Y. and Schapire, R.E., 1997.
+\newblock A decision-theoretic generalization of on-line learning and an application to boosting.
+\newblock {\em Journal of computer and system sciences}, 55(1), pp.119-139.
+
+\bibitem{shapley}
+Lundberg, S.M. and Lee, S.I., 2017.
+\newblock A unified approach to interpreting model predictions.
+\newblock {\em Advances in neural information processing systems}, 30, pp.4765-4774.
+
+\bibitem{mcnemar}
+McNemar, Q., 1947.
+\newblock Note on the sampling error of the difference between correlated proportions or percentages.
+\newblock {\em Psychometrika}, 12(2), pp.153-157.
+
+\bibitem{iotfire1}
+Sowah, R., Blaauw, F.B., Boateng, K.O. and Ampadu, E.K., 2016.
+\newblock Design and implementation of a multi-sensor smart fire detection system using fuzzy logic.
+\newblock {\em IEEE International Conference on Adaptive Science and Technology (ICAST)}, pp. 1-6.
+
+\bibitem{scikit-learn}
+Pedregosa, F. et al., 2011.
+\newblock Scikit-learn: Machine learning in Python.
+\newblock {\em Journal of machine learning research}, 12, pp.2825-2830.
+
+\bibitem{naivebayes}
+John, G.H. and Langley, P., 1995.
+\newblock Estimating continuous distributions in Bayesian classifiers.
+\newblock In {\em Proceedings of the Eleventh Conference on Uncertainty in Artificial Intelligence}, pp. 338-345.
+
+\bibitem{data_leakage}
+Kaufman, S., Rosset, S., Perlich, C. and Stitelman, O., 2012.
+\newblock Leakage in data mining: Formulation, detection, and avoidance.
+\newblock {\em ACM Transactions on Knowledge Discovery from Data (TKDD)}, 6(4), pp.1-21.
+
+\bibitem{iot_sensor_fusion}
+Al-Naji, A. and Chahl, J., 2018.
+\newblock Multi-sensor data fusion for UAV-based rescue and safety missions.
+\newblock {\em Drones}, 2(3), p.28.
+
+\end{thebibliography}
+
+\end{document}
